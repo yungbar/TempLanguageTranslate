@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Простой переводчик</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #translator {
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            min-height: 60px;
+            /* Анимация для перехода цвета фона в течение 1 секунды */
+        }
+
+        textarea:hover {
+            transition: border-color 2 ease;
+            outline: none !important;
+            box-shadow: 0 0 10px #45a049;
+            border-color: #4caf50;
+            /* Цвет подсветки при наведении */
+        }
+
+        textarea:focus {
+            transition: border-color 2s ease;
+            outline: none !important;
+            border-color: #4caf50;
+            /* Цвет подсветки при фокусе (нажатии) */
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 40px;
+
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #output {
+            min-height: 60px;
+
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+        }
+
+        .caption-h1 {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container-right-side {
+            width: 40%;
+        }
+
+        .container-left-side {
+            width: 40%;
+        }
+
+        .caption-h1 {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 100px;
+        }
+
+        .select-output-translate,
+        .select-text-for-translate {
+            outline: none !important;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .map-widget{
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 class="caption-h1">Переводчик</h1>
+    </header>
+    <div id="translator">
+
+        <div class="container-left-side">
+            <select class="select-text-for-translate">
+                <option value="en">English</option>
+                <option value="ru">Russian</option>
+            </select>
+            <textarea id="inputText" placeholder="Введите текст для перевода"></textarea>
+        </div>
+
+        <button onclick="translate()">Перевести</button>
+
+        <div class="container-right-side">
+            <select class="select-output-translate">
+                <option value="en">English</option>
+                <option value="ru">Russian</option>
+            </select>
+            <div id="output"></div>
+        </div>
+
+    </div>
+    
+    <script>
+        async function translate() {
+            var inputText = document.getElementById('inputText').value;
+            var sourceLang = document.querySelector('.select-text-for-translate').value;
+            var targetLang = document.querySelector('.select-output-translate').value;
+            var apiKey = 'Ваш_API_ключ';
+            
+            var apiUrl = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&q=${encodeURIComponent(inputText)}&source=${sourceLang}&target=${targetLang}`;
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.data && data.data.translations) {
+                    const translatedText = data.data.translations[0].translatedText;
+                    document.getElementById('output').innerText = translatedText;
+                } else {
+                    console.error('Ошибка при переводе:', data.error.message);
+                }
+            } catch (error) {
+                console.error('Ошибка запроса:', error.message);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
